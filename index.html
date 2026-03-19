@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Planner Studio Riutilizzabile</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b0d12;
+  --surface:#12161d;
+  --surface2:#171c25;
+  --surface3:#1e2632;
+  --border:#283243;
+  --text:#e7edf7;
+  --muted:#8793a5;
+  --muted2:#607086;
+  --accent:#67b7ff;
+  --accent2:#8ef7c2;
+  --warn:#ffc76b;
+  --danger:#ff8b8b;
+  --ok:#7df0a5;
+  --today:#18253d;
+  --shadow:0 12px 32px rgba(0,0,0,.24);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:linear-gradient(180deg,#0a0c11 0%, #0d1016 100%);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  line-height:1.55;
+  min-height:100vh;
+}
+button,input,select,textarea{font:inherit}
+a{color:inherit}
+.mono{font-family:'DM Mono',monospace}
+
+header{
+  padding:34px 36px 24px;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,12,17,.86);
+  backdrop-filter:blur(10px);
+  position:sticky;
+  top:0;
+  z-index:40;
+}
+.head-wrap{
+  display:flex;
+  gap:18px;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-wrap:wrap;
+}
+.h-left h1{
+  font-family:'DM Serif Display',serif;
+  font-size:2.1rem;
+  line-height:1.08;
+}
+.h-left h1 em{
+  color:var(--accent);
+  font-style:italic;
+}
+.h-left p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+.h-right{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:flex-end;
+}
+.pill{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:11px;
+  color:var(--muted);
+  font-family:'DM Mono',monospace;
+}
+.pill strong{
+  color:var(--text);
+  font-weight:500;
+}
+
+.top-alert{
+  margin-top:16px;
+  background:rgba(103,183,255,.08);
+  border:1px solid rgba(103,183,255,.22);
+  border-left:4px solid var(--accent);
+  border-radius:12px;
+  padding:12px 14px;
+  color:#d7eaff;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+.top-alert strong{color:#fff}
+
+.tabs{
+  display:flex;
+  gap:4px;
+  padding:0 36px;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+  background:#0d1016;
+  position:sticky;
+  top:121px;
+  z-index:30;
+}
+.tab{
+  appearance:none;
+  background:none;
+  border:none;
+  color:var(--muted);
+  padding:13px 16px 12px;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  font-weight:600;
+  font-size:13px;
+}
+.tab:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.03);
+}
+.tab.on{
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+}
+
+main{padding:26px 36px 60px}
+.panel{display:none}
+.panel.on{display:block}
+
+.section-title{
+  font-family:'DM Serif Display',serif;
+  font-size:1.35rem;
+  margin-bottom:18px;
+}
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:18px;
+}
+.grid-3{
+  display:grid;
+  grid-template-columns:1.15fr 1fr 1fr;
+  gap:14px;
+  margin-bottom:18px;
+}
+.card{
+  background:linear-gradient(180deg,var(--surface) 0%, #11161d 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+}
+.card.pad{padding:16px 18px}
+.card-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.card-title h3{font-size:14px;font-weight:700}
+.card-sub{color:var(--muted);font-size:12px}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+.stat{
+  padding:16px 16px 14px;
+  background:linear-gradient(180deg,var(--surface2),#121821);
+  border:1px solid var(--border);
+  border-radius:16px;
+}
+.stat .k{
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:7px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.stat .v{font-size:1.5rem;font-weight:700}
+.stat .s{margin-top:7px;font-size:12px;color:var(--muted)}
+
+.rank-list,.todo-list,.block-list,.editor-list,.event-list{display:flex;flex-direction:column;gap:10px}
+
+.rank-row{
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) 110px;
+  gap:10px;
+  align-items:center;
+  padding:12px 12px;
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.rank-pos{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--surface3);
+  display:grid;place-items:center;
+  font-weight:700;font-size:12px;color:var(--accent);
+}
+.rank-main{min-width:0}
+.rank-name{
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.rank-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.rank-score{text-align:right}
+.score{font-size:1.3rem;font-weight:800}
+.score-tag{font-size:11px;color:var(--muted)}
+
+.subject-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+  gap:14px;
+}
+.subject-card{
+  padding:16px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--surface),#11161d);
+}
+.subject-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+.subject-name{font-size:15px;font-weight:800}
+.small{font-size:11px;color:var(--muted)}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  border:1px solid var(--border);
+  background:var(--surface2);
+}
+.dot{
+  width:9px;height:9px;border-radius:50%;flex-shrink:0;
+}
+.bar{
+  width:100%;height:8px;border-radius:999px;
+  background:var(--surface3);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.03);
+}
+.fill{height:100%;border-radius:999px}
+.inline-progress{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;
+}
+.meta-row{
+  display:flex;justify-content:space-between;gap:10px;
+  margin:8px 0 12px;
+  font-size:12px;color:var(--muted);
+}
+.pair-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;
+}
+.micro{
+  padding:10px 11px;
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.micro .k{font-size:11px;color:var(--muted);margin-bottom:4px}
+.micro .v{font-weight:700;font-size:13px}
+
+.todo{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:10px;
+  align-items:flex-start;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(255,255,255,.02);
+}
+.todo input{margin-top:2px}
+.todo.done{opacity:.62}
+.todo.done .todo-title{text-decoration:line-through}
+.todo-title{font-size:13px;font-weight:600}
+.todo-meta{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;
+}
+.tag{
+  font-size:10px;
+  padding:3px 7px;
+  border-radius:999px;
+  font-weight:700;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--muted);
+}
+.tag.theory{color:#8ad1ff}
+.tag.ex{color:#8ef7c2}
+.tag.review{color:#ffd380}
+.tag.sim{color:#ff9fa8}
+.tag.oral{color:#d6a6ff}
+
+.calendar-wrap,.week-shell{
+  overflow:auto;
+  border-radius:16px;
+  border:1px solid var(--border);
+}
+.exam-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:900px;
+}
+.exam-table th{
+  text-align:left;
+  padding:10px 12px;
+  background:var(--surface2);
+  font-size:11px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--muted);
+  border-bottom:1px solid var(--border);
+}
+.exam-table td{
+  padding:11px 12px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+}
+.exam-table tr:last-child td{border-bottom:none}
+.exam-table tr.sel{background:rgba(125,240,165,.05)}
+.exam-table tr.tentative{background:rgba(255,199,107,.05)}
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  border:1px solid var(--border);
+}
+.status.sel{
+  background:rgba(125,240,165,.08);
+  color:var(--ok);
+  border-color:rgba(125,240,165,.2);
+}
+.status.free{color:var(--muted)}
+.status.tent{
+  background:rgba(255,199,107,.08);
+  color:var(--warn);
+  border-color:rgba(255,199,107,.2);
+}
+
+.today-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:14px;
+  margin-bottom:18px;
+}
+.block{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.025);
+  border-radius:14px;
+  padding:12px 13px;
+}
+.block-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+.time{
+  font-family:'DM Mono',monospace;
+  color:var(--accent);
+  font-size:12px;
+}
+.empty-note{
+  color:var(--muted);
+  font-size:13px;
+  padding:12px 0 2px;
+}
+
+.week-controls{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  appearance:none;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  padding:9px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+}
+.btn:hover{background:var(--surface3)}
+.btn.ghost{color:var(--muted)}
+.btn.accent{
+  background:rgba(103,183,255,.1);
+  border-color:rgba(103,183,255,.26);
+  color:#dff0ff;
+}
+.btn.danger{
+  background:rgba(255,139,139,.08);
+  border-color:rgba(255,139,139,.22);
+  color:#ffd5d5;
+}
+
+.week-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  min-width:1180px;
+}
+.week-table th,.week-table td{
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.week-table th:last-child,.week-table td:last-child{border-right:none}
+.week-table tr:last-child td{border-bottom:none}
+.week-table thead th{
+  background:var(--surface2);
+  padding:10px 8px;
+  text-align:center;
+  font-size:12px;
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+.week-table thead th:first-child{
+  left:0;
+  z-index:3;
+}
+.week-table .time-col{
+  width:76px;
+  min-width:76px;
+  background:var(--surface2);
+  position:sticky;
+  left:0;
+  z-index:1;
+  text-align:center;
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  color:var(--muted);
+}
+.week-cell{
+  width:150px;
+  min-width:150px;
+  height:66px;
+  padding:6px;
+  vertical-align:top;
+  background:#0f131a;
+}
+.week-cell.today{background:var(--today)}
+.slot{
+  width:100%;
+  height:100%;
+  border-radius:10px;
+  padding:6px 7px;
+  border:1px solid rgba(255,255,255,.05);
+  font-size:11px;
+  overflow:hidden;
+}
+.slot.study{color:#fff}
+.slot.event{
+  background:rgba(255,255,255,.04);
+  color:#d8dfeb;
+}
+.slot .slot-title{font-weight:800;line-height:1.2}
+.slot .slot-sub{margin-top:3px;opacity:.86;line-height:1.2}
+.slot .slot-mini{margin-top:4px;opacity:.8;font-size:10px}
+.week-day-head{
+  display:flex;flex-direction:column;gap:3px;align-items:center;
+}
+.week-day-head .d1{font-weight:700}
+.week-day-head .d2{color:var(--muted);font-size:11px}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.form-grid-2{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.fgroup{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.fgroup label{
+  font-size:12px;
+  color:var(--muted);
+}
+.input,.select,.textarea{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:12px;
+  padding:10px 11px;
+}
+.textarea{
+  min-height:180px;
+  resize:vertical;
+  width:100%;
+}
+.help{color:var(--muted);font-size:12px;margin-top:8px}
+.event-row{
+  display:grid;
+  grid-template-columns:110px 120px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+}
+.editor-row{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+}
+.editor-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.editor-head strong{font-size:13px}
+.editor-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+}
+.editor-grid-4{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.editor-grid-3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.note-box{
+  padding:13px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,199,107,.18);
+  background:rgba(255,199,107,.06);
+  color:#f7e1b0;
+  font-size:13px;
+}
+.inline-progress{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;
+}
+.reset-wrap{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:12px;
+}
+
+@media (max-width:1200px){
+  .grid-3,.grid-2,.today-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid,.editor-grid,.editor-grid-4,.editor-grid-3{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  header{padding:24px 18px 18px}
+  .tabs{padding:0 18px;top:108px}
+  main{padding:22px 18px 42px}
+  .stat-grid,.form-grid,.form-grid-2,.editor-grid,.editor-grid-4,.editor-grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-wrap">
+    <div class="h-left">
+      <h1 id="hd-title"></h1>
+      <p id="hd-subtitle"></p>
+    </div>
+    <div class="h-right" id="hd-pills"></div>
+  </div>
+  <div class="top-alert" id="hd-alert"></div>
+</header>
+
+<nav class="tabs">
+  <button class="tab on" onclick="switchTab('dashboard',this)">Dashboard</button>
+  <button class="tab" onclick="switchTab('oggi',this)">Oggi</button>
+  <button class="tab" onclick="switchTab('materie',this)">Materie & Task</button>
+  <button class="tab" onclick="switchTab('esami',this)">Calendario Esami</button>
+  <button class="tab" onclick="switchTab('settimana',this)">Settimana</button>
+  <button class="tab" onclick="switchTab('editor',this)">Editor Planner</button>
+</nav>
+
+<main>
+  <section id="panel-dashboard" class="panel on">
+    <div class="stat-grid" id="stats-grid"></div>
+
+    <div class="grid-2">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Priorità dinamiche</h3>
+          <div class="card-sub">calcolate da urgenza, difficoltà, boost e avanzamento</div>
+        </div>
+        <div class="rank-list" id="priority-list"></div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Target attuali</h3>
+          <div class="card-sub">selezionabili dalla tab Editor Planner</div>
+        </div>
+        <div class="todo-list" id="strategy-list"></div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <div class="card-title">
+        <h3>Vista rapida materie</h3>
+        <div class="card-sub">progressi, target, stato corrente</div>
+      </div>
+      <div class="subject-grid" id="subject-overview"></div>
+    </div>
+  </section>
+
+  <section id="panel-oggi" class="panel">
+    <div class="today-grid">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Programma di oggi</h3>
+          <div class="card-sub" id="today-date-label"></div>
+        </div>
+        <div class="block-list" id="today-blocks"></div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Cosa conviene fare oggi</h3>
+          <div class="card-sub">task suggeriti automaticamente</div>
+        </div>
+        <div class="todo-list" id="today-suggestions"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Impegni fissi di oggi</h3>
+          <div class="card-sub">presi dall’editor</div>
+        </div>
+        <div class="block-list" id="today-events"></div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Nota strategica</h3>
+          <div class="card-sub">dipende dai tuoi target correnti</div>
+        </div>
+        <div class="note-box" id="strategy-note"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-materie" class="panel">
+    <div class="card pad">
+      <div class="card-title">
+        <h3>Checklist dettagliata</h3>
+        <div class="card-sub">le percentuali si aggiornano automaticamente</div>
+      </div>
+      <div class="subject-grid" id="task-subject-grid"></div>
+    </div>
+  </section>
+
+  <section id="panel-esami" class="panel">
+    <div class="card pad">
+      <div class="card-title">
+        <h3>Tutti gli appelli disponibili</h3>
+        <div class="card-sub">il target selezionato per ogni materia è evidenziato</div>
+      </div>
+      <div class="calendar-wrap">
+        <table class="exam-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Materia</th>
+              <th>Stato</th>
+              <th>Tipo</th>
+              <th>Etichetta</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody id="exam-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-settimana" class="panel">
+    <div class="card pad">
+      <div class="week-controls">
+        <div>
+          <div class="section-title" style="margin-bottom:4px;font-size:1.18rem">Planner settimanale automatico</div>
+          <div class="card-sub">distribuzione sui blocchi orari disponibili</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn ghost" onclick="changeWeek(-1)">← Settimana precedente</button>
+          <button class="btn accent" onclick="goToCurrentWeek()">Settimana attuale</button>
+          <button class="btn ghost" onclick="changeWeek(1)">Settimana successiva →</button>
+        </div>
+      </div>
+
+      <div class="inline-progress">
+        <div class="small" id="week-range-label"></div>
+        <div class="small" id="week-summary-label"></div>
+      </div>
+
+      <div class="week-shell">
+        <table class="week-table" id="week-table"></table>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-editor" class="panel">
+    <div class="grid-2">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Meta planner</h3>
+          <div class="card-sub">titolo, corso, sottotitolo, alert e intervallo orario</div>
+        </div>
+        <div class="form-grid-2" id="meta-form"></div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Ore di studio per giorno</h3>
+          <div class="card-sub">quanti blocchi automatici vuoi per ogni giorno</div>
+        </div>
+        <div class="form-grid" id="hours-form"></div>
+        <div class="help">Il planner usa queste ore per distribuire le materie nel calendario settimanale.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Materie</h3>
+          <div class="card-sub">nome, sigla, tipo, colore, difficoltà, priorità, preparazione iniziale</div>
+        </div>
+        <div class="editor-list" id="subjects-editor"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn accent" onclick="addSubject()">Aggiungi materia</button>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Target esame per materia</h3>
+          <div class="card-sub">usati dal motore di priorità</div>
+        </div>
+        <div class="todo-list" id="target-selects"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Appelli</h3>
+          <div class="card-sub">puoi aggiungere, modificare e rimuovere tutto</div>
+        </div>
+        <div class="editor-list" id="exams-editor"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn accent" onclick="addExam()">Aggiungi appello</button>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Task</h3>
+          <div class="card-sub">la percentuale automatica dipende anche da questi</div>
+        </div>
+        <div class="editor-list" id="tasks-editor"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn accent" onclick="addTask()">Aggiungi task</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Impegni fissi</h3>
+          <div class="card-sub">questi slot vengono bloccati nel planner settimanale</div>
+        </div>
+
+        <div class="form-grid-2" style="margin-bottom:12px">
+          <div class="fgroup">
+            <label>Giorno</label>
+            <select id="ev-day" class="select"></select>
+          </div>
+          <div class="fgroup">
+            <label>Etichetta</label>
+            <input id="ev-label" class="input" placeholder="es. lezione, parkour, riunione" />
+          </div>
+          <div class="fgroup">
+            <label>Ora inizio</label>
+            <select id="ev-start" class="select"></select>
+          </div>
+          <div class="fgroup">
+            <label>Ora fine</label>
+            <select id="ev-end" class="select"></select>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:14px">
+          <button class="btn accent" onclick="addEvent()">Aggiungi impegno</button>
+        </div>
+
+        <div class="event-list" id="event-list"></div>
+      </div>
+
+      <div class="card pad">
+        <div class="card-title">
+          <h3>Import / Export planner</h3>
+          <div class="card-sub">puoi salvare tutto e riutilizzarlo in qualsiasi sessione</div>
+        </div>
+
+        <div class="todo-list">
+          <div class="block">
+            <div class="block-top">
+              <div style="font-weight:700">Stato salvataggio locale</div>
+              <div class="small mono" id="save-status">attivo</div>
+            </div>
+            <div class="small">Ogni modifica viene salvata automaticamente nel browser.</div>
+          </div>
+
+          <div class="block">
+            <div class="block-top">
+              <div style="font-weight:700">Strumenti dati</div>
+            </div>
+            <div class="btn-row" style="margin-bottom:10px">
+              <button class="btn" onclick="exportJson()">Esporta JSON</button>
+              <button class="btn" onclick="copyJson()">Copia JSON</button>
+              <button class="btn accent" onclick="importJson()">Importa JSON</button>
+            </div>
+            <textarea id="json-box" class="textarea" placeholder="Qui puoi esportare o incollare un backup JSON completo del planner"></textarea>
+          </div>
+
+          <div class="block">
+            <div class="block-top">
+              <div style="font-weight:700">Comandi rapidi</div>
+            </div>
+            <div class="btn-row">
+              <button class="btn danger" onclick="resetChecksOnly()">Reset solo checkbox</button>
+              <button class="btn danger" onclick="resetAll()">Reset completo planner</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const SEED = {
+  data: {
+    meta: {
+      title: "Piano di Studio",
+      course: "Aerospace Engineering",
+      subtitle: "Planner tecnico riutilizzabile con dashboard e motore di priorità",
+      alertHtml: "Puoi modificare tutto dalla tab <strong>Editor Planner</strong>: materie, appelli, target, task, difficoltà, priorità, orari e backup JSON.",
+      timeStart: 8,
+      timeEnd: 21
+    },
+    days: [
+      { key:"mon", label:"Lunedì" },
+      { key:"tue", label:"Martedì" },
+      { key:"wed", label:"Mercoledì" },
+      { key:"thu", label:"Giovedì" },
+      { key:"fri", label:"Venerdì" },
+      { key:"sat", label:"Sabato" },
+      { key:"sun", label:"Domenica" }
+    ],
+    subjects: [
+      { id:"s1", short:"A2",    name:"Analisi 2",                    color:"#67b7ff", type:"Scritto", prepInitial:10, difficulty:50,  priorityBoost:40 },
+      { id:"s2", short:"MAM",   name:"Meccanica Applicata alle Macchine", color:"#ff8f7a", type:"Scritto", prepInitial:0,  difficulty:100, priorityBoost:20 },
+      { id:"s3", short:"ET",    name:"Elettrotecnica",               color:"#8ef7c2", type:"Scritto", prepInitial:20, difficulty:40,  priorityBoost:8  },
+      { id:"s4", short:"CTRL",  name:"Controlli Automatici",         color:"#d6a6ff", type:"Scritto", prepInitial:60, difficulty:30,  priorityBoost:10 },
+      { id:"s5", short:"AN",    name:"Analisi Numerica",             color:"#ffd380", type:"Scritto", prepInitial:0,  difficulty:75,  priorityBoost:14 },
+      { id:"s6", short:"PROP",  name:"Propulsione",                  color:"#7dc5ff", type:"Orale",   prepInitial:5,  difficulty:90,  priorityBoost:8  },
+      { id:"s7", short:"TURBO", name:"Turbomacchine",                color:"#9cf2ce", type:"Orale",   prepInitial:0,  difficulty:95,  priorityBoost:8  }
+    ],
+    exams: [
+      { id:"e1", subject:"s1", label:"Giugno 2026",   date:"2026-06-20", tentative:true,  note:"data indicativa" },
+      { id:"e2", subject:"s1", label:"Luglio 2026",   date:"2026-07-20", tentative:true,  note:"data indicativa" },
+      { id:"e3", subject:"s1", label:"Settembre 2026",date:"2026-09-10", tentative:true,  note:"data indicativa" },
+
+      { id:"e4", subject:"s2", label:"16 giugno 2026",date:"2026-06-16", tentative:false, note:"" },
+      { id:"e5", subject:"s2", label:"14 luglio 2026",date:"2026-07-14", tentative:false, note:"" },
+      { id:"e6", subject:"s2", label:"4 settembre 2026",date:"2026-09-04", tentative:false, note:"" },
+
+      { id:"e7", subject:"s3", label:"17 giugno 2026",date:"2026-06-17", tentative:false, note:"" },
+      { id:"e8", subject:"s3", label:"2 luglio 2026", date:"2026-07-02", tentative:false, note:"" },
+      { id:"e9", subject:"s3", label:"24 luglio 2026",date:"2026-07-24", tentative:false, note:"" },
+
+      { id:"e10", subject:"s4", label:"Data da definire", date:"", tentative:true, note:"" },
+
+      { id:"e11", subject:"s5", label:"23 giugno 2026",date:"2026-06-23", tentative:false, note:"" },
+      { id:"e12", subject:"s5", label:"22 luglio 2026",date:"2026-07-22", tentative:false, note:"" },
+      { id:"e13", subject:"s5", label:"9 settembre 2026",date:"2026-09-09", tentative:false, note:"" },
+
+      { id:"e14", subject:"s6", label:"10 giugno 2026",date:"2026-06-10", tentative:false, note:"" },
+      { id:"e15", subject:"s6", label:"25 giugno 2026",date:"2026-06-25", tentative:false, note:"" },
+      { id:"e16", subject:"s6", label:"16 luglio 2026",date:"2026-07-16", tentative:false, note:"" },
+      { id:"e17", subject:"s6", label:"30 luglio 2026",date:"2026-07-30", tentative:false, note:"" },
+      { id:"e18", subject:"s6", label:"9 settembre 2026",date:"2026-09-09", tentative:false, note:"" },
+      { id:"e19", subject:"s6", label:"19 novembre 2026",date:"2026-11-19", tentative:false, note:"" },
+
+      { id:"e20", subject:"s7", label:"10 giugno 2026",date:"2026-06-10", tentative:false, note:"" },
+      { id:"e21", subject:"s7", label:"25 giugno 2026",date:"2026-06-25", tentative:false, note:"" },
+      { id:"e22", subject:"s7", label:"16 luglio 2026",date:"2026-07-16", tentative:false, note:"" },
+      { id:"e23", subject:"s7", label:"30 luglio 2026",date:"2026-07-30", tentative:false, note:"" },
+      { id:"e24", subject:"s7", label:"9 settembre 2026",date:"2026-09-09", tentative:false, note:"" },
+      { id:"e25", subject:"s7", label:"19 novembre 2026",date:"2026-11-19", tentative:false, note:"" }
+    ],
+    tasks: [
+      { id:"t1",  subject:"s1", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t2",  subject:"s1", cat:"ex",     label:"Esercizi base" },
+      { id:"t3",  subject:"s1", cat:"review", label:"Ripasso" },
+      { id:"t4",  subject:"s1", cat:"sim",    label:"Simulazione" },
+
+      { id:"t5",  subject:"s2", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t6",  subject:"s2", cat:"ex",     label:"Esercizi base" },
+      { id:"t7",  subject:"s2", cat:"review", label:"Ripasso" },
+      { id:"t8",  subject:"s2", cat:"sim",    label:"Simulazione" },
+
+      { id:"t9",  subject:"s3", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t10", subject:"s3", cat:"ex",     label:"Esercizi base" },
+      { id:"t11", subject:"s3", cat:"review", label:"Ripasso" },
+      { id:"t12", subject:"s3", cat:"sim",    label:"Simulazione" },
+
+      { id:"t13", subject:"s4", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t14", subject:"s4", cat:"ex",     label:"Esercizi base" },
+      { id:"t15", subject:"s4", cat:"review", label:"Ripasso" },
+      { id:"t16", subject:"s4", cat:"sim",    label:"Simulazione" },
+
+      { id:"t17", subject:"s5", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t18", subject:"s5", cat:"ex",     label:"Esercizi base" },
+      { id:"t19", subject:"s5", cat:"review", label:"Ripasso" },
+      { id:"t20", subject:"s5", cat:"sim",    label:"Simulazione" },
+
+      { id:"t21", subject:"s6", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t22", subject:"s6", cat:"oral",   label:"Allenamento orale" },
+      { id:"t23", subject:"s6", cat:"review", label:"Ripasso" },
+      { id:"t24", subject:"s6", cat:"sim",    label:"Simulazione orale" },
+
+      { id:"t25", subject:"s7", cat:"theory", label:"Teoria fondamentale" },
+      { id:"t26", subject:"s7", cat:"oral",   label:"Allenamento orale" },
+      { id:"t27", subject:"s7", cat:"review", label:"Ripasso" },
+      { id:"t28", subject:"s7", cat:"sim",    label:"Simulazione orale" }
+    ]
+  },
+  state: {
+    weekOffset: 0,
+    hours: {
+      mon:2, tue:2, wed:2, thu:4, fri:4, sat:3, sun:1
+    },
+    targets: {
+      s1:"e1",
+      s2:"e5",
+      s3:"e8",
+      s4:"e10",
+      s5:"e12",
+      s6:"e17",
+      s7:"e24"
+    },
+    checks: {},
+    events: [
+      { id:"ev1", day:"mon", start:9, end:14, label:"Lezione" },
+      { id:"ev2", day:"tue", start:9, end:14, label:"Lezione" },
+      { id:"ev3", day:"wed", start:9, end:14, label:"Lezione" }
+    ]
+  }
+};
+
+const STORAGE_KEY = "planner_studio_riutilizzabile_v2";
+let APP = loadApp();
+
+function clone(obj){
+  return JSON.parse(JSON.stringify(obj));
+}
+function uid(prefix="id"){
+  return prefix + "_" + Math.random().toString(36).slice(2,10);
+}
+function $(id){
+  return document.getElementById(id);
+}
+function subjectById(id){
+  return APP.data.subjects.find(s => s.id === id);
+}
+function examById(id){
+  return APP.data.exams.find(e => e.id === id);
+}
+function examsForSubject(subjectId){
+  return APP.data.exams.filter(e => e.subject === subjectId);
+}
+function tasksForSubject(subjectId){
+  return APP.data.tasks.filter(t => t.subject === subjectId);
+}
+function catLabel(cat){
+  if(cat === "theory") return "Teoria";
+  if(cat === "ex") return "Esercizi";
+  if(cat === "review") return "Ripasso";
+  if(cat === "sim") return "Simulazione";
+  if(cat === "oral") return "Allenamento orale";
+  return cat;
+}
+function colorA(hex, a){
+  const h = (hex || "#888888").replace("#","");
+  const r = parseInt(h.slice(0,2),16);
+  const g = parseInt(h.slice(2,4),16);
+  const b = parseInt(h.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function parseISO(iso){
+  if(!iso) return null;
+  const d = new Date(iso + "T00:00:00");
+  if(Number.isNaN(d.getTime())) return null;
+  return d;
+}
+function formatDate(date){
+  if(!date) return "TBD";
+  return date.toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"});
+}
+function dateLabelISO(iso){
+  const d = parseISO(iso);
+  return formatDate(d);
+}
+function daysBetween(a,b){
+  return Math.round((b - a) / 86400000);
+}
+function todayDate(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+function isSameDate(a,b){
+  return a.getFullYear() === b.getFullYear() &&
+         a.getMonth() === b.getMonth() &&
+         a.getDate() === b.getDate();
+}
+
+function hydrateApp(raw){
+  if(!raw) return clone(SEED);
+  const app = clone(SEED);
+
+  if(raw.data && raw.data.meta) app.data.meta = {...app.data.meta, ...raw.data.meta};
+  if(raw.data && Array.isArray(raw.data.days) && raw.data.days.length) app.data.days = raw.data.days;
+  if(raw.data && Array.isArray(raw.data.subjects)) app.data.subjects = raw.data.subjects;
+  if(raw.data && Array.isArray(raw.data.exams)) app.data.exams = raw.data.exams;
+  if(raw.data && Array.isArray(raw.data.tasks)) app.data.tasks = raw.data.tasks;
+
+  if(raw.state){
+    app.state.weekOffset = raw.state.weekOffset ?? app.state.weekOffset;
+    app.state.hours = {...app.state.hours, ...(raw.state.hours || {})};
+    app.state.targets = raw.state.targets || {};
+    app.state.checks = raw.state.checks || {};
+    app.state.events = Array.isArray(raw.state.events) ? raw.state.events : app.state.events;
+  }
+
+  sanitizeApp(app);
+  return app;
+}
+
+function sanitizeApp(app=APP){
+  const subjectIds = new Set(app.data.subjects.map(s => s.id));
+
+  app.data.exams = app.data.exams.filter(e => subjectIds.has(e.subject));
+  app.data.tasks = app.data.tasks.filter(t => subjectIds.has(t.subject));
+
+  const examIds = new Set(app.data.exams.map(e => e.id));
+  const taskIds = new Set(app.data.tasks.map(t => t.id));
+
+  const cleanTargets = {};
+  for(const s of app.data.subjects){
+    if(app.state.targets[s.id] && examIds.has(app.state.targets[s.id])){
+      cleanTargets[s.id] = app.state.targets[s.id];
+    }else{
+      const first = app.data.exams.find(e => e.subject === s.id);
+      if(first) cleanTargets[s.id] = first.id;
+    }
+  }
+  app.state.targets = cleanTargets;
+
+  const cleanChecks = {};
+  Object.keys(app.state.checks || {}).forEach(id => {
+    if(taskIds.has(id)) cleanChecks[id] = !!app.state.checks[id];
+  });
+  app.state.checks = cleanChecks;
+
+  for(const d of app.data.days){
+    if(typeof app.state.hours[d.key] !== "number") app.state.hours[d.key] = 0;
+  }
+
+  app.state.events = (app.state.events || []).filter(ev => app.data.days.some(d => d.key === ev.day));
+}
+
+function loadApp(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return clone(SEED);
+    return hydrateApp(JSON.parse(raw));
+  }catch(err){
+    return clone(SEED);
+  }
+}
+
+function saveApp(){
+  sanitizeApp(APP);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(APP));
+  const el = $("save-status");
+  if(el){
+    el.textContent = "salvato";
+    setTimeout(() => {
+      const e2 = $("save-status");
+      if(e2) e2.textContent = "attivo";
+    }, 900);
+  }
+}
+
+function switchTab(name, btn){
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+  $("panel-" + name).classList.add("on");
+  btn.classList.add("on");
+}
+
+function taskCompletion(subjectId){
+  const tasks = tasksForSubject(subjectId);
+  if(tasks.length === 0) return 0;
+  const done = tasks.filter(t => !!APP.state.checks[t.id]).length;
+  return Math.round((done / tasks.length) * 100);
+}
+function subjectProgress(subjectId){
+  const s = subjectById(subjectId);
+  if(!s) return 0;
+  const tc = taskCompletion(subjectId);
+  return Math.round(Math.min(100, s.prepInitial * 0.35 + tc * 0.65));
+}
+function targetExam(subjectId){
+  return examById(APP.state.targets[subjectId]);
+}
+function urgencyScore(subjectId, refDate=todayDate()){
+  const ex = targetExam(subjectId);
+  if(!ex || !ex.date) return 18;
+  const d = parseISO(ex.date);
+  const days = Math.max(0, daysBetween(refDate, d));
+  return Math.round(120 / (1 + days / 22));
+}
+function priorityScore(subjectId, refDate=todayDate()){
+  const s = subjectById(subjectId);
+  if(!s) return 0;
+  const progress = subjectProgress(subjectId);
+  const gap = 100 - progress;
+  const diff = Math.min(Number(s.difficulty || 0), 120);
+  const urg = urgencyScore(subjectId, refDate);
+  const boost = Number(s.priorityBoost || 0);
+  return Math.round(boost + gap * 0.70 + diff * 0.35 + urg);
+}
+function priorityLabel(score){
+  if(score >= 135) return "Critica";
+  if(score >= 105) return "Alta";
+  if(score >= 80) return "Media";
+  return "Bassa";
+}
+function nextTaskSuggestions(subjectId, n=3){
+  return APP.data.tasks.filter(t => t.subject === subjectId && !APP.state.checks[t.id]).slice(0,n);
+}
+
+function renderHeader(){
+  $("hd-title").innerHTML = `${escapeHtml(APP.data.meta.title)}<br><em>${escapeHtml(APP.data.meta.course)}</em>`;
+  $("hd-subtitle").textContent = APP.data.meta.subtitle;
+  $("hd-alert").innerHTML = `<div style="font-size:16px;line-height:1">⚙️</div><div>${APP.data.meta.alertHtml}</div>`;
+
+  const doneTasks = APP.data.tasks.filter(t => APP.state.checks[t.id]).length;
+  const totalTasks = APP.data.tasks.length;
+  const top = [...APP.data.subjects].sort((a,b) => priorityScore(b.id) - priorityScore(a.id))[0];
+
+  const pills = [
+    { k:"Materie", v:String(APP.data.subjects.length) },
+    { k:"Appelli", v:String(APP.data.exams.length) },
+    { k:"Task", v:String(APP.data.tasks.length) },
+    { k:"Top focus", v: top ? top.short : "N/D" },
+    { k:"Completati", v:`${doneTasks}/${totalTasks}` }
+  ];
+  $("hd-pills").innerHTML = pills.map(p => `<div class="pill">${p.k}: <strong>${escapeHtml(p.v)}</strong></div>`).join("");
+}
+
+function renderStats(){
+  const doneTasks = APP.data.tasks.filter(t => APP.state.checks[t.id]).length;
+  const totalTasks = APP.data.tasks.length || 1;
+
+  const subjectsSorted = APP.data.subjects
+    .map(s => ({...s, score:priorityScore(s.id), progress:subjectProgress(s.id)}))
+    .sort((a,b) => b.score - a.score);
+
+  const top = subjectsSorted[0];
+  const activeTargets = APP.data.subjects.filter(s => !!APP.state.targets[s.id]).length;
+  const nextExam = APP.data.subjects
+    .map(s => ({subject:s, ex:targetExam(s.id)}))
+    .filter(x => x.ex && x.ex.date)
+    .sort((a,b) => parseISO(a.ex.date) - parseISO(b.ex.date))[0];
+
+  let nextExamText = "TBD";
+  let nextExamSub = "nessuna data certa";
+  if(nextExam){
+    const d = parseISO(nextExam.ex.date);
+    nextExamText = formatDate(d);
+    const dd = Math.max(0, daysBetween(todayDate(), d));
+    nextExamSub = `${nextExam.subject.short} · tra ${dd} giorni`;
+  }
+
+  $("stats-grid").innerHTML = `
+    <div class="stat">
+      <div class="k">Priorità n.1</div>
+      <div class="v">${top ? escapeHtml(top.short) : "N/D"}</div>
+      <div class="s">${top ? escapeHtml(top.name) : ""}</div>
+    </div>
+    <div class="stat">
+      <div class="k">Task completati</div>
+      <div class="v">${doneTasks}/${totalTasks}</div>
+      <div class="s">${Math.round(doneTasks*100/totalTasks)}% del totale planner</div>
+    </div>
+    <div class="stat">
+      <div class="k">Prossimo target</div>
+      <div class="v">${nextExamText}</div>
+      <div class="s">${nextExamSub}</div>
+    </div>
+    <div class="stat">
+      <div class="k">Materie attive</div>
+      <div class="v">${activeTargets}</div>
+      <div class="s">con target selezionato</div>
+    </div>
+  `;
+}
+
+function renderPriorityList(){
+  const arr = APP.data.subjects
+    .map(s => ({...s, score:priorityScore(s.id), progress:subjectProgress(s.id), ex:targetExam(s.id)}))
+    .sort((a,b) => b.score - a.score);
+
+  $("priority-list").innerHTML = arr.map((s, idx) => `
+    <div class="rank-row">
+      <div class="rank-pos">${idx+1}</div>
+      <div class="rank-main">
+        <div class="rank-name">
+          <span class="dot" style="background:${s.color}"></span>
+          ${escapeHtml(s.name)}
+          <span class="tag">${escapeHtml(s.type)}</span>
+        </div>
+        <div class="rank-meta">
+          progress ${s.progress}% · difficoltà ${Number(s.difficulty)} · boost ${Number(s.priorityBoost)} · target ${s.ex ? escapeHtml(s.ex.label) : "TBD"}
+        </div>
+      </div>
+      <div class="rank-score">
+        <div class="score" style="color:${s.color}">${s.score}</div>
+        <div class="score-tag">${priorityLabel(s.score)}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderStrategyList(){
+  $("strategy-list").innerHTML = APP.data.subjects.map(s => {
+    const ex = targetExam(s.id);
+    const dateTxt = ex && ex.date ? dateLabelISO(ex.date) : "TBD";
+    const statusClass = ex && ex.tentative ? "tent" : "sel";
+    const extra = ex && ex.tentative ? "indicativo" : "selezionato";
+    return `
+      <div class="block">
+        <div class="block-top">
+          <div style="font-weight:700;display:flex;align-items:center;gap:8px">
+            <span class="dot" style="background:${s.color}"></span>
+            ${escapeHtml(s.name)}
+          </div>
+          <span class="status ${statusClass}">${extra}</span>
+        </div>
+        <div class="small">
+          target: <strong>${ex ? escapeHtml(ex.label) : "TBD"}</strong> · ${dateTxt}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderSubjectOverview(){
+  $("subject-overview").innerHTML = APP.data.subjects.map(s => {
+    const progress = subjectProgress(s.id);
+    const score = priorityScore(s.id);
+    const ex = targetExam(s.id);
+    const tc = taskCompletion(s.id);
+    return `
+      <div class="subject-card">
+        <div class="subject-top">
+          <div>
+            <div class="subject-name">${escapeHtml(s.name)}</div>
+            <div class="small">prep iniziale ${Number(s.prepInitial)}% · tipo ${escapeHtml(s.type)}</div>
+          </div>
+          <span class="chip" style="background:${colorA(s.color,.16)};border-color:${colorA(s.color,.35)};color:${s.color}">
+            ${escapeHtml(s.short)}
+          </span>
+        </div>
+
+        <div class="inline-progress">
+          <div class="small">Prontezza stimata</div>
+          <div class="small">${progress}%</div>
+        </div>
+        <div class="bar">
+          <div class="fill" style="width:${progress}%;background:${s.color}"></div>
+        </div>
+
+        <div class="meta-row">
+          <span>Task completati: ${tc}%</span>
+          <span>Priorità: ${score}</span>
+        </div>
+
+        <div class="pair-grid">
+          <div class="micro">
+            <div class="k">Target</div>
+            <div class="v">${ex ? escapeHtml(ex.label) : "TBD"}</div>
+          </div>
+          <div class="micro">
+            <div class="k">Difficoltà</div>
+            <div class="v">${Number(s.difficulty)}</div>
+          </div>
+          <div class="micro">
+            <div class="k">Boost priorità</div>
+            <div class="v">${Number(s.priorityBoost)}</div>
+          </div>
+          <div class="micro">
+            <div class="k">Focus prossimo</div>
+            <div class="v">${nextTaskSuggestions(s.id,1)[0] ? catLabel(nextTaskSuggestions(s.id,1)[0].cat) : "chiusa"}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function toggleTask(taskId){
+  APP.state.checks[taskId] = !APP.state.checks[taskId];
+  saveApp();
+  renderAll();
+}
+
+function renderTaskSubjects(){
+  $("task-subject-grid").innerHTML = APP.data.subjects.map(s => {
+    const tasks = tasksForSubject(s.id);
+    const progress = subjectProgress(s.id);
+    const tc = taskCompletion(s.id);
+
+    const taskHtml = tasks.map(t => `
+      <label class="todo ${APP.state.checks[t.id] ? "done" : ""}">
+        <input type="checkbox" ${APP.state.checks[t.id] ? "checked" : ""} onchange="toggleTask('${t.id}')">
+        <div>
+          <div class="todo-title">${escapeHtml(t.label)}</div>
+          <div class="todo-meta">
+            <span class="tag ${t.cat}">${catLabel(t.cat)}</span>
+          </div>
+        </div>
+      </label>
+    `).join("");
+
+    return `
+      <div class="subject-card">
+        <div class="subject-top">
+          <div>
+            <div class="subject-name">${escapeHtml(s.name)}</div>
+            <div class="small">progress stimato ${progress}% · task puri ${tc}%</div>
+          </div>
+          <span class="chip" style="background:${colorA(s.color,.16)};border-color:${colorA(s.color,.35)};color:${s.color}">${escapeHtml(s.short)}</span>
+        </div>
+
+        <div class="inline-progress">
+          <div class="small">Prontezza stimata</div>
+          <div class="small">${progress}%</div>
+        </div>
+        <div class="bar" style="margin-bottom:14px">
+          <div class="fill" style="width:${progress}%;background:${s.color}"></div>
+        </div>
+
+        <div class="todo-list">${taskHtml || `<div class="empty-note">Nessun task ancora inserito.</div>`}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderExamTable(){
+  const rows = [...APP.data.exams].sort((a,b) => {
+    const da = parseISO(a.date);
+    const db = parseISO(b.date);
+    if(!da && !db) return 0;
+    if(!da) return 1;
+    if(!db) return -1;
+    return da - db;
+  });
+
+  $("exam-body").innerHTML = rows.map(e => {
+    const s = subjectById(e.subject);
+    if(!s) return "";
+    const selected = APP.state.targets[e.subject] === e.id;
+    let statusClass = "free";
+    let statusText = "Disponibile";
+    if(selected && e.tentative){
+      statusClass = "tent";
+      statusText = "Target · indicativo";
+    }else if(selected){
+      statusClass = "sel";
+      statusText = "Target";
+    }else if(e.tentative){
+      statusClass = "tent";
+      statusText = "Indicativo";
+    }
+
+    return `
+      <tr class="${selected ? "sel" : ""} ${e.tentative ? "tentative" : ""}">
+        <td class="mono">${e.date ? dateLabelISO(e.date) : "TBD"}</td>
+        <td>
+          <span class="chip" style="background:${colorA(s.color,.16)};border-color:${colorA(s.color,.35)};color:${s.color}">
+            <span class="dot" style="background:${s.color}"></span>
+            ${escapeHtml(s.short)} · ${escapeHtml(s.name)}
+          </span>
+        </td>
+        <td><span class="status ${statusClass}">${statusText}</span></td>
+        <td>${escapeHtml(s.type)}</td>
+        <td>${escapeHtml(e.label)}</td>
+        <td class="small">${escapeHtml(e.note || "")}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function getCurrentMonday(){
+  const t = todayDate();
+  const day = t.getDay();
+  const diff = (day + 6) % 7;
+  t.setDate(t.getDate() - diff + (APP.state.weekOffset * 7));
+  return t;
+}
+function getWeekDates(){
+  const mon = getCurrentMonday();
+  return APP.data.days.map((d, idx) => {
+    const x = new Date(mon);
+    x.setDate(mon.getDate() + idx);
+    x.setHours(0,0,0,0);
+    return { ...d, date:x };
+  });
+}
+function preferredHours(dayKey){
+  const map = {
+    mon:[18,19,20,21],
+    tue:[18,19,20,21],
+    wed:[18,19,20,21],
+    thu:[9,10,11,14,15,16,17,18,19,20],
+    fri:[9,10,11,14,15,16,17,18,19,20],
+    sat:[9,10,11,14,15,16,17,18],
+    sun:[10,11,16,17,18]
+  };
+  return map[dayKey] || [18,19];
+}
+function eventsForDay(dayKey){
+  return APP.state.events.filter(e => e.day === dayKey).sort((a,b) => a.start - b.start);
+}
+function freeSlotsForDay(dayKey){
+  const targetHours = Number(APP.state.hours[dayKey] || 0);
+  if(targetHours <= 0) return [];
+  const busy = new Set();
+  eventsForDay(dayKey).forEach(ev => {
+    for(let h = ev.start; h < ev.end; h++) busy.add(h);
+  });
+
+  const start = Number(APP.data.meta.timeStart);
+  const end = Number(APP.data.meta.timeEnd);
+  const prefs = preferredHours(dayKey).filter(h => h >= start && h <= end && !busy.has(h));
+
+  if(prefs.length >= targetHours) return prefs.slice(0,targetHours);
+
+  const full = [];
+  for(let h = start; h <= end; h++){
+    if(!busy.has(h) && !prefs.includes(h)) full.push(h);
+  }
+  return [...prefs, ...full].slice(0,targetHours);
+}
+function focusSequence(subject){
+  if(subject.type === "Orale") return ["Teoria","Ripasso","Allenamento orale","Teoria","Simulazione"];
+  return ["Esercizi","Teoria","Esercizi","Ripasso","Simulazione"];
+}
+function buildWeeklyPlan(){
+  const weekDates = getWeekDates();
+  const refDate = weekDates[0].date;
+  const freeSlots = [];
+  weekDates.forEach(d => {
+    freeSlotsForDay(d.key).forEach(h => freeSlots.push({ dayKey:d.key, hour:h }));
+  });
+
+  const activeSubjects = APP.data.subjects
+    .map(s => ({...s, score:priorityScore(s.id, refDate), progress:subjectProgress(s.id)}))
+    .sort((a,b) => b.score - a.score)
+    .slice(0, Math.min(5, APP.data.subjects.length));
+
+  const totalScore = activeSubjects.reduce((acc,s) => acc + s.score, 0) || 1;
+  const quotas = {};
+  let assigned = 0;
+
+  activeSubjects.forEach(s => {
+    quotas[s.id] = Math.floor((s.score / totalScore) * freeSlots.length);
+    assigned += quotas[s.id];
+  });
+
+  const remainders = [...activeSubjects].sort((a,b) => {
+    const ra = (a.score / totalScore) * freeSlots.length - quotas[a.id];
+    const rb = (b.score / totalScore) * freeSlots.length - quotas[b.id];
+    return rb - ra;
+  });
+
+  let rem = freeSlots.length - assigned;
+  let idx = 0;
+  while(rem > 0 && remainders.length){
+    quotas[remainders[idx % remainders.length].id]++;
+    rem--;
+    idx++;
+  }
+
+  const bag = [];
+  activeSubjects.forEach(s => {
+    for(let i=0;i<quotas[s.id];i++) bag.push(s.id);
+  });
+
+  const countBySubject = {};
+  const plan = {};
+  freeSlots.forEach((slot, i) => {
+    const subjectId = bag[i] || activeSubjects[0]?.id;
+    if(!subjectId) return;
+    const subject = subjectById(subjectId);
+    countBySubject[subjectId] = (countBySubject[subjectId] || 0) + 1;
+    const seq = focusSequence(subject);
+    const focus = seq[(countBySubject[subjectId] - 1) % seq.length];
+    if(!plan[slot.dayKey]) plan[slot.dayKey] = {};
+    plan[slot.dayKey][slot.hour] = { subjectId, focus };
+  });
+
+  return { plan, activeSubjects, freeSlotsCount: freeSlots.length };
+}
+function renderWeekTable(){
+  const weekDates = getWeekDates();
+  const monday = weekDates[0].date;
+  const sunday = weekDates[6].date;
+  const { plan, activeSubjects, freeSlotsCount } = buildWeeklyPlan();
+
+  $("week-range-label").textContent = `Settimana visualizzata: ${formatDate(monday)} · ${formatDate(sunday)}`;
+  $("week-summary-label").textContent = `blocchi studio previsti: ${freeSlotsCount} · focus principali: ${activeSubjects.map(s => s.short).join(", ")}`;
+
+  const today = todayDate();
+  let thead = `
+    <thead>
+      <tr>
+        <th class="time-col">Ora</th>
+        ${weekDates.map(d => `
+          <th>
+            <div class="week-day-head">
+              <div class="d1">${escapeHtml(d.label)}</div>
+              <div class="d2">${d.date.toLocaleDateString("it-IT",{day:"2-digit",month:"2-digit"})}</div>
+            </div>
+          </th>
+        `).join("")}
+      </tr>
+    </thead>
+  `;
+
+  let rows = "";
+  const start = Number(APP.data.meta.timeStart);
+  const end = Number(APP.data.meta.timeEnd);
+
+  for(let hour = start; hour <= end; hour++){
+    rows += `<tr><td class="time-col">${String(hour).padStart(2,"0")}:00</td>`;
+    weekDates.forEach(d => {
+      const ev = eventsForDay(d.key).find(x => hour >= x.start && hour < x.end);
+      const slot = plan[d.key]?.[hour];
+      const isToday = isSameDate(d.date, today);
+      let cellHtml = "";
+
+      if(ev){
+        cellHtml = `
+          <div class="slot event">
+            <div class="slot-title">${escapeHtml(ev.label)}</div>
+            <div class="slot-sub mono">${String(ev.start).padStart(2,"0")}:00 · ${String(ev.end).padStart(2,"0")}:00</div>
+          </div>
+        `;
+      }else if(slot){
+        const s = subjectById(slot.subjectId);
+        cellHtml = `
+          <div class="slot study" style="background:${colorA(s.color,.18)};border-color:${colorA(s.color,.34)}">
+            <div class="slot-title">${escapeHtml(s.short)}</div>
+            <div class="slot-sub">${escapeHtml(slot.focus)}</div>
+            <div class="slot-mini">${escapeHtml(s.name)}</div>
+          </div>
+        `;
+      }
+
+      rows += `<td class="week-cell ${isToday ? "today" : ""}">${cellHtml}</td>`;
+    });
+    rows += `</tr>`;
+  }
+
+  $("week-table").innerHTML = thead + `<tbody>${rows}</tbody>`;
+}
+
+function renderToday(){
+  const today = todayDate();
+  $("today-date-label").textContent = today.toLocaleDateString("it-IT", {
+    weekday:"long", day:"2-digit", month:"long", year:"numeric"
+  });
+
+  const weekDates = getWeekDates();
+  let todayKey = null;
+  for(const d of weekDates){
+    if(isSameDate(d.date, today)){ todayKey = d.key; break; }
+  }
+  if(!todayKey){
+    const day = today.getDay();
+    todayKey = APP.data.days[(day + 6) % 7].key;
+  }
+
+  const { plan } = buildWeeklyPlan();
+  const slots = Object.entries(plan[todayKey] || {})
+    .map(([hour, data]) => ({ hour:Number(hour), ...data }))
+    .sort((a,b) => a.hour - b.hour);
+
+  $("today-blocks").innerHTML = slots.length ? slots.map(s => {
+    const subj = subjectById(s.subjectId);
+    return `
+      <div class="block">
+        <div class="block-top">
+          <div style="font-weight:800;display:flex;align-items:center;gap:8px">
+            <span class="dot" style="background:${subj.color}"></span>
+            ${escapeHtml(subj.name)}
+          </div>
+          <div class="time">${String(s.hour).padStart(2,"0")}:00 · ${String(s.hour+1).padStart(2,"0")}:00</div>
+        </div>
+        <div class="small">Focus consigliato: <strong>${escapeHtml(s.focus)}</strong></div>
+      </div>
+    `;
+  }).join("") : `<div class="empty-note">Oggi non ci sono blocchi generati. Puoi aumentare le ore disponibili o modificare i target.</div>`;
+
+  const todayEv = eventsForDay(todayKey);
+  $("today-events").innerHTML = todayEv.length ? todayEv.map(ev => `
+    <div class="block">
+      <div class="block-top">
+        <div style="font-weight:700">${escapeHtml(ev.label)}</div>
+        <div class="time">${String(ev.start).padStart(2,"0")}:00 · ${String(ev.end).padStart(2,"0")}:00</div>
+      </div>
+    </div>
+  `).join("") : `<div class="empty-note">Nessun impegno fisso inserito per oggi.</div>`;
+
+  const sugg = APP.data.subjects
+    .map(s => ({
+      subject:s,
+      score:priorityScore(s.id),
+      tasks: nextTaskSuggestions(s.id, 2)
+    }))
+    .sort((a,b) => b.score - a.score)
+    .flatMap(x => x.tasks.map(t => ({...t, subject:x.subject, score:x.score})))
+    .slice(0,5);
+
+  $("today-suggestions").innerHTML = sugg.length ? sugg.map(t => `
+    <label class="todo ${APP.state.checks[t.id] ? "done" : ""}">
+      <input type="checkbox" ${APP.state.checks[t.id] ? "checked" : ""} onchange="toggleTask('${t.id}')">
+      <div>
+        <div class="todo-title">${escapeHtml(t.label)}</div>
+        <div class="todo-meta">
+          <span class="tag ${t.cat}">${catLabel(t.cat)}</span>
+          <span class="tag">${escapeHtml(t.subject.short)}</span>
+          <span class="tag">priorità ${t.score}</span>
+        </div>
+      </div>
+    </label>
+  `).join("") : `<div class="empty-note">Nessun task suggerito. O hai finito tutto, oppure hai creato il sogno di ogni studente.</div>`;
+
+  const top = [...APP.data.subjects].sort((a,b) => priorityScore(b.id) - priorityScore(a.id))[0];
+  const tex = targetExam(top?.id || "");
+  $("strategy-note").innerHTML = top ? `
+    In questo momento la materia più spinta dal planner è <strong>${escapeHtml(top.name)}</strong>.
+    Il motore la considera alta perché combina <strong>difficoltà</strong>, <strong>boost priorità</strong>,
+    <strong>stato di avanzamento</strong> e <strong>vicinanza al target</strong>.
+    Target attuale: <strong>${tex ? escapeHtml(tex.label) : "TBD"}</strong>.
+  ` : `Nessuna materia disponibile.`;
+}
+
+function renderMetaForm(){
+  $("meta-form").innerHTML = `
+    <div class="fgroup">
+      <label>Titolo</label>
+      <input class="input" value="${escapeAttr(APP.data.meta.title)}" onchange="updateMetaField('title', this.value)">
+    </div>
+    <div class="fgroup">
+      <label>Corso</label>
+      <input class="input" value="${escapeAttr(APP.data.meta.course)}" onchange="updateMetaField('course', this.value)">
+    </div>
+    <div class="fgroup">
+      <label>Sottotitolo</label>
+      <input class="input" value="${escapeAttr(APP.data.meta.subtitle)}" onchange="updateMetaField('subtitle', this.value)">
+    </div>
+    <div class="fgroup">
+      <label>Ora iniziale planner</label>
+      <input class="input" type="number" min="0" max="23" value="${Number(APP.data.meta.timeStart)}" onchange="updateMetaNumber('timeStart', this.value)">
+    </div>
+    <div class="fgroup">
+      <label>Ora finale planner</label>
+      <input class="input" type="number" min="0" max="23" value="${Number(APP.data.meta.timeEnd)}" onchange="updateMetaNumber('timeEnd', this.value)">
+    </div>
+    <div class="fgroup" style="grid-column:1/-1">
+      <label>Alert HTML</label>
+      <textarea class="textarea" onchange="updateMetaField('alertHtml', this.value)">${escapeTextarea(APP.data.meta.alertHtml)}</textarea>
+    </div>
+  `;
+}
+function updateMetaField(field, value){
+  APP.data.meta[field] = value;
+  saveApp();
+  renderAll();
+}
+function updateMetaNumber(field, value){
+  APP.data.meta[field] = Number(value || 0);
+  if(APP.data.meta.timeEnd < APP.data.meta.timeStart) APP.data.meta.timeEnd = APP.data.meta.timeStart;
+  saveApp();
+  fillEventHourSelects();
+  renderAll();
+}
+
+function renderHoursForm(){
+  $("hours-form").innerHTML = APP.data.days.map(d => `
+    <div class="fgroup">
+      <label>${escapeHtml(d.label)}</label>
+      <input class="input" type="number" min="0" max="12" value="${APP.state.hours[d.key] ?? 0}" onchange="setDayHours('${d.key}', this.value)">
+    </div>
+  `).join("");
+}
+function setDayHours(dayKey, value){
+  APP.state.hours[dayKey] = Math.max(0, Math.min(12, Number(value || 0)));
+  saveApp();
+  renderAll();
+}
+
+function renderSubjectsEditor(){
+  $("subjects-editor").innerHTML = APP.data.subjects.map((s, idx) => `
+    <div class="editor-row">
+      <div class="editor-head">
+        <strong>${escapeHtml(s.name)}</strong>
+        <div class="btn-row">
+          <button class="btn danger" onclick="removeSubject('${s.id}')">Rimuovi materia</button>
+        </div>
+      </div>
+      <div class="editor-grid">
+        <div class="fgroup">
+          <label>Nome</label>
+          <input class="input" value="${escapeAttr(s.name)}" onchange="updateSubjectField('${s.id}','name',this.value)">
+        </div>
+        <div class="fgroup">
+          <label>Sigla</label>
+          <input class="input" value="${escapeAttr(s.short)}" onchange="updateSubjectField('${s.id}','short',this.value)">
+        </div>
+        <div class="fgroup">
+          <label>Tipo</label>
+          <select class="select" onchange="updateSubjectField('${s.id}','type',this.value)">
+            <option value="Scritto" ${s.type==="Scritto"?"selected":""}>Scritto</option>
+            <option value="Orale" ${s.type==="Orale"?"selected":""}>Orale</option>
+            <option value="Misto" ${s.type==="Misto"?"selected":""}>Misto</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Colore</label>
+          <input class="input" type="color" value="${escapeAttr(s.color)}" onchange="updateSubjectField('${s.id}','color',this.value)">
+        </div>
+        <div class="fgroup">
+          <label>Prep iniziale</label>
+          <input class="input" type="number" min="0" max="100" value="${Number(s.prepInitial)}" onchange="updateSubjectNumber('${s.id}','prepInitial',this.value,0,100)">
+        </div>
+        <div class="fgroup">
+          <label>Difficoltà</label>
+          <input class="input" type="number" min="0" max="120" value="${Number(s.difficulty)}" onchange="updateSubjectNumber('${s.id}','difficulty',this.value,0,120)">
+        </div>
+        <div class="fgroup">
+          <label>Boost priorità</label>
+          <input class="input" type="number" min="0" max="100" value="${Number(s.priorityBoost)}" onchange="updateSubjectNumber('${s.id}','priorityBoost',this.value,0,100)">
+        </div>
+        <div class="fgroup">
+          <label>ID interno</label>
+          <input class="input" value="${escapeAttr(s.id)}" disabled>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+function updateSubjectField(id, field, value){
+  const s = subjectById(id);
+  if(!s) return;
+  s[field] = value;
+  saveApp();
+  renderAll();
+}
+function updateSubjectNumber(id, field, value, min, max){
+  const s = subjectById(id);
+  if(!s) return;
+  const n = Math.max(min, Math.min(max, Number(value || 0)));
+  s[field] = n;
+  saveApp();
+  renderAll();
+}
+function addSubject(){
+  const id = uid("sub");
+  APP.data.subjects.push({
+    id,
+    short:"NEW",
+    name:"Nuova materia",
+    color:"#67b7ff",
+    type:"Scritto",
+    prepInitial:0,
+    difficulty:50,
+    priorityBoost:0
+  });
+  APP.state.targets[id] = "";
+  saveApp();
+  renderAll();
+}
+function removeSubject(id){
+  const ok = confirm("Rimuovere questa materia eliminerà anche appelli, task e target collegati. Procedere?");
+  if(!ok) return;
+  APP.data.subjects = APP.data.subjects.filter(s => s.id !== id);
+  APP.data.exams = APP.data.exams.filter(e => e.subject !== id);
+  const taskIds = APP.data.tasks.filter(t => t.subject === id).map(t => t.id);
+  APP.data.tasks = APP.data.tasks.filter(t => t.subject !== id);
+  taskIds.forEach(tid => delete APP.state.checks[tid]);
+  delete APP.state.targets[id];
+  sanitizeApp(APP);
+  saveApp();
+  renderAll();
+}
+
+function renderTargetSelects(){
+  $("target-selects").innerHTML = APP.data.subjects.map(s => {
+    const opts = examsForSubject(s.id).map(e => `
+      <option value="${e.id}" ${APP.state.targets[s.id] === e.id ? "selected" : ""}>
+        ${escapeHtml(e.label)}${e.tentative ? " · indicativo" : ""}
+      </option>
+    `).join("");
+    return `
+      <div class="block">
+        <div class="block-top">
+          <div style="font-weight:800;display:flex;align-items:center;gap:8px">
+            <span class="dot" style="background:${s.color}"></span>
+            ${escapeHtml(s.name)}
+          </div>
+          <span class="tag">${escapeHtml(s.type)}</span>
+        </div>
+        <select class="select" onchange="setTarget('${s.id}', this.value)" style="width:100%">
+          ${opts || `<option value="">Nessun appello</option>`}
+        </select>
+      </div>
+    `;
+  }).join("");
+}
+function setTarget(subjectId, examId){
+  APP.state.targets[subjectId] = examId;
+  saveApp();
+  renderAll();
+}
+
+function renderExamsEditor(){
+  $("exams-editor").innerHTML = APP.data.exams.map(e => `
+    <div class="editor-row">
+      <div class="editor-head">
+        <strong>${escapeHtml(e.label || "Nuovo appello")}</strong>
+        <div class="btn-row">
+          <button class="btn danger" onclick="removeExam('${e.id}')">Rimuovi appello</button>
+        </div>
+      </div>
+      <div class="editor-grid-4">
+        <div class="fgroup">
+          <label>Materia</label>
+          <select class="select" onchange="updateExamField('${e.id}','subject',this.value)">
+            ${subjectOptions(e.subject)}
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Etichetta</label>
+          <input class="input" value="${escapeAttr(e.label)}" onchange="updateExamField('${e.id}','label',this.value)">
+        </div>
+        <div class="fgroup">
+          <label>Data</label>
+          <input class="input" type="date" value="${escapeAttr(e.date || "")}" onchange="updateExamField('${e.id}','date',this.value)">
+        </div>
+        <div class="fgroup">
+          <label>Indicativo</label>
+          <select class="select" onchange="updateExamBoolean('${e.id}','tentative',this.value)">
+            <option value="false" ${!e.tentative ? "selected" : ""}>No</option>
+            <option value="true" ${e.tentative ? "selected" : ""}>Sì</option>
+          </select>
+        </div>
+        <div class="fgroup" style="grid-column:1/-1">
+          <label>Note</label>
+          <input class="input" value="${escapeAttr(e.note || "")}" onchange="updateExamField('${e.id}','note',this.value)">
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+function subjectOptions(selectedId){
+  return APP.data.subjects.map(s => `<option value="${s.id}" ${s.id===selectedId?"selected":""}>${escapeHtml(s.short)} · ${escapeHtml(s.name)}</option>`).join("");
+}
+function updateExamField(id, field, value){
+  const e = examById(id);
+  if(!e) return;
+  e[field] = value;
+  sanitizeApp(APP);
+  saveApp();
+  renderAll();
+}
+function updateExamBoolean(id, field, value){
+  const e = examById(id);
+  if(!e) return;
+  e[field] = (value === "true");
+  sanitizeApp(APP);
+  saveApp();
+  renderAll();
+}
+function addExam(){
+  if(!APP.data.subjects.length){
+    alert("Devi prima creare almeno una materia.");
+    return;
+  }
+  const sid = APP.data.subjects[0].id;
+  const id = uid("exam");
+  APP.data.exams.push({
+    id,
+    subject:sid,
+    label:"Nuovo appello",
+    date:"",
+    tentative:false,
+    note:""
+  });
+  if(!APP.state.targets[sid]) APP.state.targets[sid] = id;
+  sanitizeApp(APP);
+  saveApp();
+  renderAll();
+}
+function removeExam(id){
+  const ok = confirm("Rimuovere questo appello?");
+  if(!ok) return;
+  APP.data.exams = APP.data.exams.filter(e => e.id !== id);
+  sanitizeApp(APP);
+  saveApp();
+  renderAll();
+}
+
+function renderTasksEditor(){
+  $("tasks-editor").innerHTML = APP.data.tasks.map(t => `
+    <div class="editor-row">
+      <div class="editor-head">
+        <strong>${escapeHtml(t.label || "Nuovo task")}</strong>
+        <div class="btn-row">
+          <button class="btn danger" onclick="removeTask('${t.id}')">Rimuovi task</button>
+        </div>
+      </div>
+      <div class="editor-grid-3">
+        <div class="fgroup">
+          <label>Materia</label>
+          <select class="select" onchange="updateTaskField('${t.id}','subject',this.value)">
+            ${subjectOptions(t.subject)}
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Categoria</label>
+          <select class="select" onchange="updateTaskField('${t.id}','cat',this.value)">
+            <option value="theory" ${t.cat==="theory"?"selected":""}>Teoria</option>
+            <option value="ex" ${t.cat==="ex"?"selected":""}>Esercizi</option>
+            <option value="review" ${t.cat==="review"?"selected":""}>Ripasso</option>
+            <option value="sim" ${t.cat==="sim"?"selected":""}>Simulazione</option>
+            <option value="oral" ${t.cat==="oral"?"selected":""}>Allenamento orale</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Etichetta</label>
+          <input class="input" value="${escapeAttr(t.label)}" onchange="updateTaskField('${t.id}','label',this.value)">
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+function updateTaskField(id, field, value){
+  const t = APP.data.tasks.find(x => x.id === id);
+  if(!t) return;
+  t[field] = value;
+  sanitizeApp(APP);
+  saveApp();
+  renderAll();
+}
+function addTask(){
+  if(!APP.data.subjects.length){
+    alert("Devi prima creare almeno una materia.");
+    return;
+  }
+  APP.data.tasks.push({
+    id:uid("task"),
+    subject:APP.data.subjects[0].id,
+    cat:"theory",
+    label:"Nuovo task"
+  });
+  saveApp();
+  renderAll();
+}
+function removeTask(id){
+  const ok = confirm("Rimuovere questo task?");
+  if(!ok) return;
+  APP.data.tasks = APP.data.tasks.filter(t => t.id !== id);
+  delete APP.state.checks[id];
+  saveApp();
+  renderAll();
+}
+
+function fillEventControls(){
+  $("ev-day").innerHTML = APP.data.days.map(d => `<option value="${d.key}">${escapeHtml(d.label)}</option>`).join("");
+  fillEventHourSelects();
+}
+function fillEventHourSelects(){
+  const start = Number(APP.data.meta.timeStart);
+  const end = Number(APP.data.meta.timeEnd) + 1;
+  const opts = [];
+  for(let h = start; h <= end; h++){
+    opts.push(`<option value="${h}">${String(h).padStart(2,"0")}:00</option>`);
+  }
+  $("ev-start").innerHTML = opts.join("");
+  $("ev-end").innerHTML = opts.join("");
+  if(start <= 18 && 18 <= end) $("ev-start").value = 18;
+  if(start <= 20 && 20 <= end) $("ev-end").value = 20;
+}
+function addEvent(){
+  const day = $("ev-day").value;
+  const label = $("ev-label").value.trim();
+  const start = Number($("ev-start").value);
+  const end = Number($("ev-end").value);
+
+  if(!label){
+    alert("Inserisci un’etichetta per l’impegno.");
+    return;
+  }
+  if(end <= start){
+    alert("L’ora di fine deve essere successiva all’ora di inizio.");
+    return;
+  }
+
+  APP.state.events.push({ id:uid("ev"), day, start, end, label });
+  $("ev-label").value = "";
+  saveApp();
+  renderAll();
+}
+function removeEvent(id){
+  APP.state.events = APP.state.events.filter(e => e.id !== id);
+  saveApp();
+  renderAll();
+}
+function renderEventList(){
+  $("event-list").innerHTML = APP.state.events.length ? APP.state.events
+    .sort((a,b) => {
+      const da = APP.data.days.findIndex(x => x.key === a.day);
+      const db = APP.data.days.findIndex(x => x.key === b.day);
+      if(da !== db) return da - db;
+      return a.start - b.start;
+    })
+    .map(ev => `
+      <div class="event-row">
+        <div><span class="tag">${escapeHtml(APP.data.days.find(d => d.key === ev.day)?.label || ev.day)}</span></div>
+        <div class="mono">${String(ev.start).padStart(2,"0")}:00 · ${String(ev.end).padStart(2,"0")}:00</div>
+        <div>${escapeHtml(ev.label)}</div>
+        <button class="btn ghost" onclick="removeEvent('${ev.id}')">Rimuovi</button>
+      </div>
+    `).join("") : `<div class="empty-note">Nessun impegno fisso inserito.</div>`;
+}
+
+function changeWeek(delta){
+  APP.state.weekOffset += delta;
+  saveApp();
+  renderAll();
+}
+function goToCurrentWeek(){
+  APP.state.weekOffset = 0;
+  saveApp();
+  renderAll();
+}
+
+function exportJson(){
+  $("json-box").value = JSON.stringify(APP, null, 2);
+}
+async function copyJson(){
+  exportJson();
+  try{
+    await navigator.clipboard.writeText($("json-box").value);
+    alert("JSON copiato negli appunti.");
+  }catch(err){
+    alert("Copia non riuscita. Puoi copiarlo manualmente dal box.");
+  }
+}
+function importJson(){
+  const txt = $("json-box").value.trim();
+  if(!txt){
+    alert("Incolla prima un JSON valido nel box.");
+    return;
+  }
+  try{
+    const parsed = JSON.parse(txt);
+    APP = hydrateApp(parsed);
+    saveApp();
+    fillEventControls();
+    renderAll();
+    alert("Planner importato correttamente.");
+  }catch(err){
+    alert("JSON non valido.");
+  }
+}
+function resetChecksOnly(){
+  const ok = confirm("Vuoi azzerare solo tutte le checkbox dei task?");
+  if(!ok) return;
+  APP.state.checks = {};
+  saveApp();
+  renderAll();
+}
+function resetAll(){
+  const ok = confirm("Vuoi davvero resettare tutto il planner? Verranno persi dati, appelli, task, target, impegni e spunte.");
+  if(!ok) return;
+  localStorage.removeItem(STORAGE_KEY);
+  APP = clone(SEED);
+  fillEventControls();
+  renderAll();
+}
+
+function escapeHtml(str){
+  return String(str ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+function escapeAttr(str){
+  return escapeHtml(str).replaceAll("\n","&#10;");
+}
+function escapeTextarea(str){
+  return String(str ?? "").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+
+function renderAll(){
+  sanitizeApp(APP);
+  renderHeader();
+  renderStats();
+  renderPriorityList();
+  renderStrategyList();
+  renderSubjectOverview();
+  renderTaskSubjects();
+  renderExamTable();
+  renderToday();
+  renderMetaForm();
+  renderHoursForm();
+  renderSubjectsEditor();
+  renderTargetSelects();
+  renderExamsEditor();
+  renderTasksEditor();
+  renderWeekTable();
+  renderEventList();
+}
+
+fillEventControls();
+renderAll();
+</script>
+</body>
+</html>
